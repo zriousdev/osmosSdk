@@ -39,6 +39,21 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+    
+    // Osmos SDK
+    implementation(libs.osmos.sdk)
+    
+    // Glide for image loading
+    implementation(libs.glide)
+    
+    // Lifecycle components for ViewModels and Coroutines
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.activity.ktx)
+    
+    // Gson
+    implementation(libs.gson)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
