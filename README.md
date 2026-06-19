@@ -86,6 +86,15 @@ On ad click, we execute two operations:
 
 ---
 
+## Assumptions Made
+
+1. **Internet Access**: The app assumes a constant internet connection for ad fetching and tracking. A retry mechanism with progressive backoff is implemented to handle transient network issues.
+2. **Global Initialization**: The Osmos SDK is initialized in the `Application` subclass (`MyApplication`) to ensure SDK components are configured globally before any UI components start.
+3. **Dynamic Aspect Ratio**: Ad creatives may vary in size. Thus, we assume the container's height must be dynamically recalculated at runtime instead of hardcoding fixed bounds.
+4. **Visibility Calculations**: We assume the 50% visibility check must be calculated relative to the scroll viewport of the device screen, ensuring impressions are registered only when the user actually sees at least half of the ad.
+
+---
+
 ## Technical Challenges & Solutions
 
 1. **SDK Package Names Difference**: 
@@ -94,7 +103,16 @@ On ad click, we execute two operations:
 2. **AGP 9.0+ Built-in Kotlin conflict**:
    - *Challenge*: Adding `org.jetbrains.kotlin.android` plugin explicitly to the plugins block resulted in a Gradle configuration error: `Cannot add extension with name 'kotlin', as there is an extension already registered with that name.`
    - *Solution*: AGP 9.0+ has built-in Kotlin support and automatically registers the Kotlin extension. We removed the explicit plugin application from our build files, allowing AGP to configure compilation out-of-the-box.
-3. **Resilience to SDK Network Failures**:
+3. **Wrapped SDK Response Data Structure**:
+   - *Challenge*: When fetching display ads in the live app, the SDK returned a nested response map where the actual ads were nested as a serialized JSON string under `response` -> `data`, unlike the direct JSON maps used in mockup tests.
+   - *Solution*: We refactored `AdParser.parseAdResponse()` to be resilient. It checks if the `"ads"` object is present at the root level, and if not, retrieves and parses the nested JSON string in `response` -> `data` automatically, allowing both unit tests and the live app to work seamlessly.
+4. **JVM Log Mocking during Unit Testing**:
+   - *Challenge*: Running JVM-based unit tests threw a `RuntimeException` because `android.util.Log` is stubbed in standard JUnit test environments and throws exceptions on call.
+   - *Solution*: We created safe `logD()` and `logE()` logging wrappers inside `AdParser.kt` that catch JVM exceptions and fallback to standard system output (`println`), resolving test suite failures.
+5. **Layout Shift on Screen Orientation Change**:
+   - *Challenge*: Since `MainActivity` has `configChanges` enabled to prevent activity recreation and preserve UI state, rotating the screen caused the banner layout aspect ratio to distort because container dimensions were not updated for the new width.
+   - *Solution*: We overrode `onConfigurationChanged()` in `MainActivity` to automatically recompute and apply the aspect ratio height adjustments whenever the screen changes orientation.
+6. **Resilience to SDK Network Failures**:
    - *Challenge*: If the SDK's tracking event registration fails (e.g. network timeout or invalid SDK state), tracking could fail.
    - *Solution*: We added a network-level fallback inside `AdViewModel`. If the SDK event call throws an exception, the ViewModel automatically performs a direct HTTP GET request to the `impression_tracking_url` or `click_tracking_url` to guarantee that the events are delivered.
 

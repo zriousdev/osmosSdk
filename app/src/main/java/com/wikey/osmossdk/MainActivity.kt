@@ -218,4 +218,13 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         visibilityTracker?.stop()
     }
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // If an ad is currently loaded successfully, recalculate the aspect ratio for the new screen width
+        val state = viewModel.adState.value
+        if (state is AdState.Success) {
+            adjustContainerAspectRatio(state.ad.width, state.ad.height, adRenderArea)
+        }
+    }
 }
