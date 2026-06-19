@@ -195,12 +195,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openLandingPage(url: String) {
-        if (url.isBlank()) return
+        val targetUrl = if (url.isBlank()) {
+            "https://osmos.ai" // Safe fallback to Osmos homepage for demo/sandbox ads
+        } else {
+            url
+        }
         try {
-            val parsedUrl = if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                "https://$url"
+            val parsedUrl = if (!targetUrl.startsWith("http://") && !targetUrl.startsWith("https://")) {
+                "https://$targetUrl"
             } else {
-                url
+                targetUrl
             }
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(parsedUrl))
             startActivity(intent)
