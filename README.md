@@ -135,4 +135,9 @@ On ad click, we execute two operations:
 4. Run the project on an emulator or connected device.
 5. Tap the **Load Ad** button to fetch and display the ad.
 6. Verify the logs console updates dynamically showing the ad loading lifecycle and visibility states.
-https://github.com/user-attachments/assets/1e7dbb87-9c34-4816-b6e7-0829a6c1d2b6
+---
+
+## Demo Video
+<video src="https://github.com/user-attachments/assets/1e7dbb87-9c34-4816-b6e7-0829a6c1d2b6" width="100%" controls></video>
+
+*(If the inline player does not load in your browser, click here to watch it in a new tab: [Watch demo here](https://github.com/user-attachments/assets/1e7dbb87-9c34-4816-b6e7-0829a6c1d2b6))*
